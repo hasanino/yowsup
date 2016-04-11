@@ -287,12 +287,25 @@ class YowAxolotlLayer(YowProtocolLayer):
         node.addChild(bodyNode)
         self.toUpper(node)
 
+    """ !hasan: mesajlarin sonuna garip karakterlerin eklenmesinin onlenmesi
     def unpadV2Plaintext(self, v2plaintext):
         if len(v2plaintext) < 128:
             return v2plaintext[2:-1]
         else: # < 128 * 128
             return v2plaintext[3: -1]
+    """
+    def unpadV2Plaintext(self, v2plaintext):
+        # length of the right padding
+        end = -ord(v2plaintext[-1])
+        # first k bytes is the message's length
+        start = 0
+        length = 0
+        while length + start < len(v2plaintext) + end:
+            length *= 127
+            start += 1
+            length += ord(v2plaintext[start])
 
+        return v2plaintext[start:end]
     ####
 
     ### keys set and get
